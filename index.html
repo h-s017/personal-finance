@@ -1,1 +1,137 @@
-PLACEHOLDER
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#30312f" />
+  <title>個人財務控管</title>
+  <meta name="description" content="以現金流、信用卡、分期與貸款為核心的個人財務控管工具。" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><small>PERSONAL FINANCE</small><strong>個人財務控管</strong></div>
+    <nav class="nav" id="nav">
+      <button class="active" data-page="dashboard"><span class="icon">◫</span>財務總覽</button>
+      <button data-page="transactions"><span class="icon">↕</span>每日收支</button>
+      <button data-page="accounts"><span class="icon">▣</span>現金存款</button>
+      <button data-page="cards"><span class="icon">▭</span>信用卡</button>
+      <button data-page="debts"><span class="icon">≋</span>分期與貸款</button>
+      <button data-page="reports"><span class="icon">▥</span>月報表</button>
+      <button data-page="settings"><span class="icon">⚙</span>設定與備份</button>
+    </nav>
+    <div class="sidebar-foot"><b>資料僅儲存在此瀏覽器</b><br>請定期匯出備份檔。</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:10px"><button class="btn menu-btn" id="menuBtn">☰</button><h1 id="pageTitle">財務總覽</h1></div>
+      <div class="topbar-actions">
+        <input id="globalMonth" type="month" style="width:145px" />
+        <button class="btn primary hide-mobile" id="quickAdd">＋新增收支</button>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="page-dashboard">
+        <div class="page-head"><div><h2>資產與現金流</h2><p>同時看「消費發生」與「實際付款」，避免信用卡重複計算。</p></div></div>
+        <div class="grid kpis" id="dashboardKpis"></div>
+        <div class="grid dashboard-grid">
+          <div class="card section-card">
+            <div class="section-title"><div><h3>年度收入與消費</h3><small id="trendYear"></small></div><div class="legend"><span class="l-income">收入</span><span class="l-expense">消費</span></div></div>
+            <div class="month-strip" id="yearTrend"></div>
+          </div>
+          <div class="card section-card">
+            <div class="section-title"><div><h3>本月支出分類</h3><small>依消費發生日</small></div></div>
+            <div class="progress-list" id="categoryProgress"></div>
+          </div>
+        </div>
+        <div class="grid dashboard-grid">
+          <div class="card section-card">
+            <div class="section-title"><div><h3>最近交易</h3><small>最新 8 筆</small></div><button class="btn small" data-go="transactions">查看全部</button></div>
+            <div id="recentTransactions"></div>
+          </div>
+          <div class="card section-card">
+            <div class="section-title"><div><h3>負債風險</h3><small>依目前資料估算</small></div></div>
+            <div class="progress-list" id="riskList"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-transactions">
+        <div class="page-head"><div><h2>每日收支</h2><p>刷卡消費記為「消費」；實際繳卡費再記為「信用卡繳款」。</p></div><div class="actions"><button class="btn primary" data-add="transaction">＋新增收支</button></div></div>
+        <div class="toolbar">
+          <input class="grow" id="txSearch" placeholder="搜尋項目、分類、備註…" />
+          <select id="txTypeFilter" style="width:160px"><option value="">全部性質</option></select>
+          <select id="txCategoryFilter" style="width:150px"><option value="">全部分類</option></select>
+        </div>
+        <div class="card section-card" style="margin-bottom:14px"><div class="summary-list" id="transactionSummary"></div></div>
+        <div class="table-wrap" id="transactionTable"></div>
+      </section>
+
+      <section class="page" id="page-accounts">
+        <div class="page-head"><div><h2>現金與存款</h2><p>保留用途金額不會從資產扣除，但會影響可動用餘額。</p></div><div class="actions"><button class="btn primary" data-add="account">＋新增帳戶</button></div></div>
+        <div class="grid account-grid" id="accountGrid"></div>
+      </section>
+
+      <section class="page" id="page-cards">
+        <div class="page-head"><div><h2>信用卡</h2><p>未出帳、本期帳單與分期剩餘本金分開追蹤。</p></div><div class="actions"><button class="btn primary" data-add="card">＋新增信用卡</button></div></div>
+        <div class="grid account-grid" id="cardGrid"></div>
+      </section>
+
+      <section class="page" id="page-debts">
+        <div class="page-head"><div><h2>分期與貸款</h2><p>信用卡分期會自動連結至對應信用卡，貸款則獨立計入負債。</p></div><div class="actions"><button class="btn primary" data-add="debt">＋新增分期／貸款</button></div></div>
+        <div class="table-wrap" id="debtTable"></div>
+      </section>
+
+      <section class="page" id="page-reports">
+        <div class="page-head"><div><h2>每月支出</h2><p>「消費支出」看生活成本；「實際現金流出」看當月真正付款。</p></div></div>
+        <div class="grid kpis" id="reportKpis"></div>
+        <div class="card section-card" style="margin-top:16px">
+          <div class="section-title"><div><h3>每日支出月曆</h3><small id="calendarMonthLabel"></small></div></div>
+          <div class="daily-grid" id="dailyCalendar"></div>
+        </div>
+        <div class="card section-card" style="margin-top:16px">
+          <div class="section-title"><div><h3>年度月報</h3><small>預算可直接修改</small></div></div>
+          <div class="table-wrap" id="monthlyTable"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings">
+        <div class="page-head"><div><h2>設定與備份</h2><p>資料只存在目前瀏覽器，清除瀏覽資料前務必先匯出。</p></div></div>
+        <div class="grid settings-grid">
+          <div class="card backup-box">
+            <h3>資料備份</h3>
+            <p>匯出完整 JSON，可在其他裝置或瀏覽器匯入。</p>
+            <div class="actions"><button class="btn primary" id="exportData">匯出備份</button><label class="btn" for="importFile">匯入備份</label><input class="file-input" id="importFile" type="file" accept="application/json" /></div>
+            <p class="privacy">建議每月至少備份一次。備份檔可能包含個人財務資訊，請妥善保管。</p>
+          </div>
+          <div class="card backup-box">
+            <h3>年度預算</h3>
+            <label>目前年度<select id="settingsYear"></select></label>
+            <label style="margin-top:12px">預設每月消費預算<input id="defaultBudget" type="number" min="0" step="100" /></label>
+            <button class="btn" id="applyBudget" style="margin-top:12px">套用到尚未設定的月份</button>
+          </div>
+          <div class="card backup-box">
+            <h3>分類管理</h3>
+            <label>支出分類（每行一個）<textarea id="categoryEditor"></textarea></label>
+            <button class="btn" id="saveCategories" style="margin-top:12px">儲存分類</button>
+          </div>
+          <div class="card backup-box">
+            <h3>危險操作</h3>
+            <div class="notice warn">此操作會刪除目前瀏覽器內的全部財務資料，且無法復原。</div>
+            <button class="btn danger" id="clearData" style="margin-top:12px">清除全部資料</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop"><div class="modal"><div class="modal-head"><h3 id="modalTitle">新增</h3><button class="icon-btn" id="modalClose">×</button></div><div class="modal-body"><form id="modalForm"></form></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
